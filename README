@@ -1,3 +1,5 @@
+MAM: Adicionei o conteudo de fila.c, fazendo os ajustes para nova nomenclatura. Atualizei o .h
+
 As funções básicas da aplicação FilaDePilha são:
 cria ( ... ) -- Sergio
 destroi ( ... ) -- 
