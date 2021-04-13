@@ -1,4 +1,4 @@
-typedef struct Pilha pilha;
+typedef struct Pilha Pilha;
 
 Pilha *criaPilha(int capacidade, int tamanho);
 int destroiPilha(Pilha *s);

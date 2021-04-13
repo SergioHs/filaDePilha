@@ -5,9 +5,9 @@
 
 #define qtdmax 100
 
-pFila* criar(int tamanhoDados, int *resultado){
+pfila* criar(int tamanho_dados, int *resultado){
 
-    pFila *f = (pFila*)malloc(sizeof(pFila));
+    pfila *f = (pfila*)malloc(sizeof(pfila));
     
     if (!f) {
         printf("Erro ao criar fila!!\n");
@@ -16,13 +16,14 @@ pFila* criar(int tamanhoDados, int *resultado){
     }
     f->inicio=NULL;
     f->fim=NULL;
-    f->tamanhoDados = tamanhoDados;
-    // printf("Valor de f-tamdados: %d\n", f->tamanhoDados);
+    f->tamanho_dados = tamanho_dados;
+    // printf("Valor de f-tamdados: %d\n", f->tamanho_dados);
     *resultado = 0;
     return f;
+    
 }
 
-void enfileirar(pFila *f, void *elemento, int *resultado){
+void enfileirar(pfila *f, void *elemento, int *resultado){
     
     if(f==NULL) {
         printf("Fila nao alocada!\n");
@@ -30,10 +31,10 @@ void enfileirar(pFila *f, void *elemento, int *resultado){
         return;
     }
 
-    // printf("Alocando nodeFila el!\n");
-    nodeFila *el = malloc(sizeof(nodeFila));
-    // printf("Alocando dados do nodeFila el!\n");
-    el->pilha = (void*) malloc(f->tamanhoDados);
+    // printf("Alocando noFila el!\n");
+    noFila *el = malloc(sizeof(noFila));
+    // printf("Alocando dados do noFila el!\n");
+    el->dados = (void*) malloc(f->tamanho_dados);
 
     if(el==NULL) {
         printf("Falha na alocacao do elemento\n");
@@ -42,28 +43,30 @@ void enfileirar(pFila *f, void *elemento, int *resultado){
     }
 
     // printf("Definindo dados elemento novo como elemento passado!\n");
-    el->pilha = elemento;
+    el->dados = elemento;
     // printf("Definindo ponteiro prox do elemento novo para NULL!\n");
-    el->ant = NULL;
+    el->prox = NULL;
     
     if(f->inicio==NULL){
         // printf("inicio eh null, entao inicio eh elemento novo");
         f->inicio=el;
     } else { 
         // printf("inicio nao e null, entao fim-prox = elemento novo");
-        f->fim->ant=el;
+        f->fim->prox=el;
+        
     }
     // printf("Fim da fila vira novo elemento\n");
     f->fim=el;
     printf("\nValor no inicio da fila: %s\n", f->inicio);
     printf("Valor no fim da fila: %s\n\n", f->fim);
     *resultado = 0;
+
 }
 
-void* desenfileirar(pFila *f, int *resultado){
+void* desenfileirar(pfila *f, int *resultado){
     
-    nodeFila *el = malloc(sizeof(nodeFila));
-    // item = malloc(sizeof(nodeFila));
+    noFila *el = malloc(sizeof(noFila));
+    // item = malloc(sizeof(noFila));
     // el->dados = (void*) malloc(f->tamanho_dados);
 
     if(f==NULL) {
@@ -71,9 +74,9 @@ void* desenfileirar(pFila *f, int *resultado){
         *resultado=1;
         exit(1);
     }
-    if(vazia(f)==0){
+    if(filaVazia(f)==0){
         *resultado=1;
-        printf("Fila vazia!\n");
+        printf("Fila Vazia!\n");
         exit(1);
     }
 
@@ -81,12 +84,14 @@ void* desenfileirar(pFila *f, int *resultado){
     el = f->inicio;
 
     // printf("Valor de el: %s\n", el);
-    // printf("Valor de f-inicio-prox: %s\n", f->inicio->prox);        
 
-    if(f->inicio->ant==NULL) {
+    // printf("Valor de f-inicio-prox: %s\n", f->inicio->prox);        
+    if(f->inicio->prox==NULL) {
+        
         f->inicio=NULL;
         f->fim=NULL; 
-    } else f->inicio = f->inicio->ant;
+
+    } else f->inicio = f->inicio->prox;
 
     // printf("\nValor removido: %s\n", el);
     // free(el);
@@ -94,87 +99,102 @@ void* desenfileirar(pFila *f, int *resultado){
     return el;
 }
 
-void destruir (pFila *f, int *resultado){
+void destruir (pfila *f, int *resultado){
 
     // printf("Valor de f-inicio %s\n", f->inicio);
 
     while(f->inicio!=NULL) {
+        
         printf("desenfileirando...\n");
-        nodeFila *apagar = malloc(sizeof(nodeFila));
+        noFila *apagar = malloc(sizeof(noFila));
         apagar = f->inicio;
-        f->inicio = f->inicio->ant;
+        f->inicio = f->inicio->prox;
         free(apagar);
     }
     free(f);
     *resultado = 0;
 }
 
-int cheia(pFila *f){
+int filaCheia(pfila *f){
     
-    nodeFila *el = malloc(sizeof(nodeFila));
+    
+    noFila *el = malloc(sizeof(noFila));
 
     if(f==NULL) {
         printf("Fila nao alocada!\n");
         return 1;
     }
-    if(vazia(f)==0){
-        printf("Fila vazia!\n");
+    if(filaVazia(f)==0){
+        printf("Fila Vazia!\n");
         return 1;
     }
 
     int i=1;
+
     el = f->inicio;
     
     while(el!=f->fim){
+
         i++;
-        el = el->ant;
+        el = el->prox;
+
     }
+
     if(i<qtdmax) return 1; else return 0;
+    
+    
 }
 
-int vazia(pFila *f){
+int filaVazia(pfila *f){
 
     if(f->inicio==NULL) return 0; else return 1;
 
 }
 
-
-// FUNÇÕES OPCIONAIS - VERIFICAR SE MANTEMOS OU NÃO
-
-void consultarpontas (pFila *f, void *inicio, void *fim, int *resultado){
+void consultarpontas (pfila *f, void *inicio, void *fim, int *resultado){
         
     if(f==NULL) {
         printf("Fila nao alocada!\n");
         *resultado=1;
         return;
     }
-    if(vazia(f)==0){
-        printf("Fila vazia!\n");
+
+    if(filaVazia(f)==0){
+        printf("Fila Vazia!\n");
     } else {    
-        memcpy(inicio, f->inicio, f->tamanhoDados);
-        memcpy(fim, f->fim, f->tamanhoDados);
+        memcpy(inicio, f->inicio, f->tamanho_dados);
+        memcpy(fim, f->fim, f->tamanho_dados);
+
     }
     *resultado = 0;
+
+
 }
 
-int consultaqtd(pFila *f){
+int consultaqtd(pfila *f){
+    
     
     if(f==NULL) {
         printf("Fila nao alocada!\n");
         return 1;
     }
-    if(vazia(f)==0){
-        printf("Fila vazia!\n");
+    if(filaVazia(f)==0){
+        printf("Fila filaVazia!\n");
         return 1;
     }
 
     int i=1;
-    nodeFila *el = malloc(sizeof(nodeFila));
+    noFila *el = malloc(sizeof(noFila));
+
     el = f->inicio;
     
     while(el!=f->fim){
+
         i++;
-        el = el->ant;
+        el = el->prox;
+
     }
+
     printf("%d/%d espaços disponíveis na fila.\n", i, qtdmax); 
+       
 }

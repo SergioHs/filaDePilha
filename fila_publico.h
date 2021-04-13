@@ -1,10 +1,9 @@
-typedef struct Fila pFila;
+typedef struct fila pfila;
+typedef struct noFila noFila;
 
-pFila* criaFila (int tamanho_dados, int *resultado);
-void destroiFila (pFila *f, int *resultado);
-void enfileirar (pFila *f, void *elemento, int *resultado);
-void* desenfileirar (pFila *f, int *resultado);
-
-// opcionais
-void consultarpontas (pFila *f, void *inicio, void *fim, int *resultado);
-int consultaqtd(pFila *f);
+pfila* criar(int tamanho_dados, int *resultado);
+void enfileirar(pfila *f, void *elemento, int *resultado);
+void* desenfileirar(pfila *f, int *resultado);
+void destruir (pfila *f, int *resultado);
+void consultarpontas (pfila *f, void *inicio, void *fim, int *resultado);
+int consultaqtd(pfila *f);

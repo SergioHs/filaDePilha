@@ -1,15 +1,16 @@
 #include "fila_publico.h"
 
-typedef struct nodeFila {
-    struct pilha *pilha;
-    struct nodeFila *ant;
-} nodeFila;
+typedef struct fila {
 
-typedef struct Fila {
-    nodeFila *inicio, *fim;
-    int tamanhoDados;
+    noFila *inicio, *fim;
+    int tamanho_dados;    
 
-} pFila;
+} pfila;
 
-int cheia(pFila *f); // ver qual é o sentido
-int vazia(pFila *f);
+typedef struct noFila {
+    void *dados;
+    noFila *prox;
+} noFila;
+
+int filaCheia(pfila *f);
+int filaVazia(pfila *f);
