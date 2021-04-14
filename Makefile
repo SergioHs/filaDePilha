@@ -1,30 +1,21 @@
-# the compiler: gcc for C program, define as g++ for C++
-CC = gcc
+CC=gcc
+FLAGS=-Wall -g
 
-# compiler flags:
-#  -g    adds debugging information to the executable file
-#  -Wall turns on most, but not all, compiler warnings
-#  -03 gcc version
-CFLAGS  = -g -Wall -O3
+default: app
 
-default: main
+pilha.o: pilha.c pilha_interface.h pilha_privado.h
+	$(CC) $(FLAGS) -c pilha.c -o pilha.o
 
-fila.o: fila.c fila_publico.h fila_privado.h
-	$(CC) $(CFLAGS) -c fila.c -o fila.o
+fila.o: fila.c fila_interface.h fila_privado.h
+	$(CC) $(FLAGS) -c fila.c -o fila.o
 
-pilha.o: pilha.c pilha_publico.h pilha_privado.h
-	$(CC) $(CFLAGS) -c pilha.c -o pilha.o
+fila_pilha.o: fila_pilha.c fila_pilha_interface.h fila_pilha_privado.h
+	$(CC) $(FLAGS) -c fila_pilha.c -o fila_pilha.o
 
-filaPilha.o: filaPilha.c filaPilha_publico.h filaPilha_privado.h
-	$(CC) $(CFLAGS) -c filaPilha.c -o filaPilha.o
+app: main.c main.h pilha.o fila.o fila_pilha.o  
+	$(CC) $(FLAGS) main.c pilha.o fila.o fila_pilha.o -o app
 
-main: main.c fila.o pilha.o filaPilha.o
-	$(CC) $(CFLAGS) main.c fila.o pilha.o filaPilha.o -o main
-
-run: clean main
-	./main
+.PHONY: clean
 
 clean:
-	rm -f main *.o core a.out *.*~ Makefile~
-
-all: main
+	rm -f *.o app

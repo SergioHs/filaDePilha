@@ -1,7 +1,8 @@
-MAM: Adicionei o conteudo de fila.c, fazendo os ajustes para nova nomenclatura. Atualizei o .h
+Aplicação que utiliza uma fila de pilhas. A fila de pilha permite definir o tamanho de cada pilha, que no caso da aplicação foi definido como 3. Nessa aplicação, números inteiros são inseridos.
 
-As funções básicas da aplicação FilaDePilha são:
-cria ( ... ) -- Sergio
-destroi ( ... ) -- 
-insere ( ... ) -- Marco
-remove ( ... ) -- Felipe
+Para compilar a aplicação, basta apenas executar o comando "make".
+
+Para executar a aplicação, basta apenas executar o comando "./app".
+
+Os TDAs utilizados nessa aplicação podem ser utilizados individualmente, importando o devido arquivo de interface (e.g "pilha_interface.h").
+Olhar a interface de cada TDA é suficiente para entender o seu uso, apresentando um fluxo simples (criar -> inserir dados/remover dados -> destruir).

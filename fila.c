@@ -1,200 +1,96 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include <string.h> 
 #include "fila_privado.h"
+#include "fila_interface.h"
 
-#define qtdmax 100
+#include <stdlib.h>
+#include <string.h>
 
-pfila* criar(int tamanho_dados, int *resultado){
+#define FRACASSO 0
+#define SUCESSO  1
 
-    pfila *f = (pfila*)malloc(sizeof(pfila));
-    
-    if (!f) {
-        printf("Erro ao criar fila!!\n");
-        *resultado = 1;
-        exit(1);
-    }
-    f->inicio=NULL;
-    f->fim=NULL;
-    f->tamanho_dados = tamanho_dados;
-    // printf("Valor de f-tamdados: %d\n", f->tamanho_dados);
-    *resultado = 0;
-    return f;
-    
+int filaCriar(Fila **fila, int tamanho_dados) {
+  if (fila == NULL || tamanho_dados < 1) return FRACASSO;
+
+  *fila = (Fila*) malloc(sizeof(Fila));
+  (*fila)->tamanho_dados = tamanho_dados;
+  (*fila)->tamanho = 0;
+  (*fila)->inicio = (*fila)->fim = NULL;
+
+  return SUCESSO;
 }
 
-void enfileirar(pfila *f, void *elemento, int *resultado){
-    
-    if(f==NULL) {
-        printf("Fila nao alocada!\n");
-        *resultado=1;
-        return;
-    }
+int filaDestruir(Fila **fila) {
+  if (fila == NULL || *fila == NULL) return FRACASSO;
 
-    // printf("Alocando noFila el!\n");
-    noFila *el = malloc(sizeof(noFila));
-    // printf("Alocando dados do noFila el!\n");
-    el->dados = (void*) malloc(f->tamanho_dados);
+  void *dados = malloc((*fila)->tamanho_dados);
+  while ((*fila)->inicio != NULL) {
+    filaDesenfileirar(*fila, dados);
+  }
+  free(dados);
 
-    if(el==NULL) {
-        printf("Falha na alocacao do elemento\n");
-        *resultado=1;
-        return;
-    }
+  free(*fila);
 
-    // printf("Definindo dados elemento novo como elemento passado!\n");
-    el->dados = elemento;
-    // printf("Definindo ponteiro prox do elemento novo para NULL!\n");
-    el->prox = NULL;
-    
-    if(f->inicio==NULL){
-        // printf("inicio eh null, entao inicio eh elemento novo");
-        f->inicio=el;
-    } else { 
-        // printf("inicio nao e null, entao fim-prox = elemento novo");
-        f->fim->prox=el;
-        
-    }
-    // printf("Fim da fila vira novo elemento\n");
-    f->fim=el;
-    printf("\nValor no inicio da fila: %s\n", f->inicio);
-    printf("Valor no fim da fila: %s\n\n", f->fim);
-    *resultado = 0;
-
+  return SUCESSO;
 }
 
-void* desenfileirar(pfila *f, int *resultado){
-    
-    noFila *el = malloc(sizeof(noFila));
-    // item = malloc(sizeof(noFila));
-    // el->dados = (void*) malloc(f->tamanho_dados);
+int filaEnfileirar(Fila *fila, void *dados) {
+  if (fila == NULL || dados == NULL) return FRACASSO;
 
-    if(f==NULL) {
-        printf("Fila nao alocada!\n");
-        *resultado=1;
-        exit(1);
-    }
-    if(filaVazia(f)==0){
-        *resultado=1;
-        printf("Fila Vazia!\n");
-        exit(1);
-    }
+  NoFila *novo_no = (NoFila*) malloc(sizeof(NoFila));
+  novo_no->dados = malloc(fila->tamanho_dados);
+  memcpy(novo_no->dados, dados, fila->tamanho_dados);
+  novo_no->ant = NULL;
 
-    // printf("Valor de f-inicio: %s\n", f->inicio);
-    el = f->inicio;
+  if (fila->inicio == NULL) {
+    fila->inicio = fila->fim = novo_no;
+  } else {
+    fila->fim->ant = novo_no;
+    fila->fim = novo_no;
+  }
 
-    // printf("Valor de el: %s\n", el);
+  fila->tamanho++;
 
-    // printf("Valor de f-inicio-prox: %s\n", f->inicio->prox);        
-    if(f->inicio->prox==NULL) {
-        
-        f->inicio=NULL;
-        f->fim=NULL; 
-
-    } else f->inicio = f->inicio->prox;
-
-    // printf("\nValor removido: %s\n", el);
-    // free(el);
-    *resultado=0;
-    return el;
+  return SUCESSO;
 }
 
-void destruir (pfila *f, int *resultado){
+int filaDesenfileirar(Fila *fila, void *dados) {
+  if (fila == NULL || fila->inicio == NULL) return FRACASSO;
 
-    // printf("Valor de f-inicio %s\n", f->inicio);
+  NoFila *no = fila->inicio;
+  
+  memcpy(dados, no->dados, fila->tamanho_dados);
+  free(no->dados);
 
-    while(f->inicio!=NULL) {
-        
-        printf("desenfileirando...\n");
-        noFila *apagar = malloc(sizeof(noFila));
-        apagar = f->inicio;
-        f->inicio = f->inicio->prox;
-        free(apagar);
-    }
-    free(f);
-    *resultado = 0;
+  if (no->ant == NULL) {
+    fila->inicio = fila->fim = NULL;
+  } else {
+    fila->inicio = no->ant;
+  }
+
+  free(no);
+
+  fila->tamanho--;
+
+  return SUCESSO;
 }
 
-int filaCheia(pfila *f){
-    
-    
-    noFila *el = malloc(sizeof(noFila));
+int filaCabeca(Fila *fila, void *dados) {
+  if (fila == NULL || fila->inicio == NULL) return FRACASSO;
 
-    if(f==NULL) {
-        printf("Fila nao alocada!\n");
-        return 1;
-    }
-    if(filaVazia(f)==0){
-        printf("Fila Vazia!\n");
-        return 1;
-    }
+  memcpy(dados, fila->inicio->dados, fila->tamanho_dados);
 
-    int i=1;
-
-    el = f->inicio;
-    
-    while(el!=f->fim){
-
-        i++;
-        el = el->prox;
-
-    }
-
-    if(i<qtdmax) return 1; else return 0;
-    
-    
+  return SUCESSO; 
 }
 
-int filaVazia(pfila *f){
+int filaCauda(Fila *fila, void *dados) {
+  if (fila == NULL || fila->fim == NULL) return FRACASSO;
 
-    if(f->inicio==NULL) return 0; else return 1;
+  memcpy(dados, fila->fim->dados, fila->tamanho_dados);
 
+  return SUCESSO; 
 }
 
-void consultarpontas (pfila *f, void *inicio, void *fim, int *resultado){
-        
-    if(f==NULL) {
-        printf("Fila nao alocada!\n");
-        *resultado=1;
-        return;
-    }
+int filaTamanho(Fila *fila) {
+  if (fila == NULL) return 0;
 
-    if(filaVazia(f)==0){
-        printf("Fila Vazia!\n");
-    } else {    
-        memcpy(inicio, f->inicio, f->tamanho_dados);
-        memcpy(fim, f->fim, f->tamanho_dados);
-
-    }
-    *resultado = 0;
-
-
-}
-
-int consultaqtd(pfila *f){
-    
-    
-    if(f==NULL) {
-        printf("Fila nao alocada!\n");
-        return 1;
-    }
-    if(filaVazia(f)==0){
-        printf("Fila filaVazia!\n");
-        return 1;
-    }
-
-    int i=1;
-    noFila *el = malloc(sizeof(noFila));
-
-    el = f->inicio;
-    
-    while(el!=f->fim){
-
-        i++;
-        el = el->prox;
-
-    }
-
-    printf("%d/%d espaços disponíveis na fila.\n", i, qtdmax); 
-       
+  return fila->tamanho;
 }

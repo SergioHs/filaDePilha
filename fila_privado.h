@@ -1,16 +1,12 @@
-#include "fila_publico.h"
+#include "pilha_interface.h"
 
-typedef struct fila {
+typedef struct NoFila {
+  void *dados;
+  struct NoFila *ant;
+} NoFila;
 
-    noFila *inicio, *fim;
-    int tamanho_dados;    
-
-} pfila;
-
-typedef struct noFila {
-    void *dados;
-    noFila *prox;
-} noFila;
-
-int filaCheia(pfila *f);
-int filaVazia(pfila *f);
+typedef struct Fila {
+  struct NoFila *inicio, *fim;
+  int tamanho_dados;
+  int tamanho;
+} Fila;

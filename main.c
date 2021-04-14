@@ -1,19 +1,27 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "filaPilha_publico.h"
+#include "main.h"
 
 int main() {
+  FilaPilha *fila_pilha;
+  filaPilhaCriar(&fila_pilha, 3, sizeof(int));
+  
+  int num;
+  printf("Digite um número (digite 0 para finalizar): ");
+  scanf("%d", &num);
 
-    int resultado;
-    FilaPilha* FP = criarFilaPilha(sizeof(int), &resultado);
+  while (num != 0) {
+    filaPilhaInserir(fila_pilha, &num);
 
-    if(!FP){
-        printf("\n Deu ruim \n");
+    printf("Digite um número (digite 0 para finalizar): ");
+    scanf("%d", &num);
+  }
 
-    } else {
-        printf("\n Deu boa, Fila pilha foi alocada com sucesso e está sendo usada na Main \n");
+  printf("\nNúmeros inseridos:\n");
+  while (!filaPilhaVazia(fila_pilha)) {
+    filaPilhaRemover(fila_pilha, &num);
+    printf("%d\n", num);
+  }
 
-    }
+  filaPilhaDestruir(&fila_pilha);
 
+  return 0;
 }

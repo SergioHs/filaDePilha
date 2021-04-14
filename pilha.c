@@ -1,125 +1,76 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include <string.h> 
 #include "pilha_privado.h"
+#include "pilha_interface.h"
 
-Pilha *criaPilha(int capacidade, int tamanho) {
+#include <stdlib.h>
+#include <string.h>
 
-  printf ("Alocando pilha...\n");
-  Pilha *res = malloc(sizeof(Pilha));
-  if (!res) {
-    printf("Erro ao criar pilha!\n");
-    exit(1);
+#define FRACASSO 0
+#define SUCESSO  1
+
+int pilhaCriar(Pilha **pilha, int tamanho, int tamanho_dados) {
+  if (tamanho_dados < 1 || pilha == NULL) return FRACASSO;
+
+  *pilha = (Pilha*) malloc(sizeof(Pilha));
+
+  (*pilha)->tamanho_dados = tamanho_dados;
+  (*pilha)->tamanho_maximo = tamanho;
+  (*pilha)->tamanho_atual = 0;
+
+  (*pilha)->dados = (void**) malloc(tamanho * sizeof(void*));
+  for (int i = 0; i < tamanho; ++i) {
+    (*pilha)->dados[i] = malloc(tamanho_dados);
   }
-  res->capacidade = capacidade;
-  res->tamanhoDados = tamanho;
-  res->posicao = 0;
+
+  return SUCESSO; 
+}
+
+int pilhaDestruir(Pilha **pilha) {
+  if (pilha == NULL || *pilha == NULL) return FRACASSO;
+
+  for (int i = 0; i < (*pilha)->tamanho_maximo; ++i) {
+    free((*pilha)->dados[i]);
+  }
+  free((*pilha)->dados);
+
+  free(*pilha);
+
+  *pilha = NULL;
+
+  return SUCESSO;
+}
+
+int pilhaEmpilhar(Pilha *pilha, void *dados) {
+  if (pilha == NULL || dados == NULL || pilhaCheia(pilha)) return FRACASSO;
   
-  printf ("Alocando dados\n");
-  if (!(res->dados = malloc(capacidade * tamanho))) {
-    printf("Erro ao criar pilha!\n");
-    exit(1);
-  };
+  memcpy(pilha->dados[pilha->tamanho_atual], dados, pilha->tamanho_dados);
 
-  return res;
+  pilha->tamanho_atual++;
 
+  return SUCESSO;
 }
 
-int destroiPilha(Pilha *s) {
+int pilhaDesempilhar(Pilha *pilha, void *dados) {
+  if (pilha == NULL || dados == NULL || pilhaVazia(pilha)) return FRACASSO;
 
-  if (!s) {
-    printf("Pilha não alocada!!\n");
-    return 1;
-  } else {
-    free(s->dados);
-    free(s);
-    return 0;
-  }
+  memcpy(dados, pilha->dados[pilha->tamanho_atual - 1], pilha->tamanho_dados);
+
+  pilha->tamanho_atual--;
+
+  return SUCESSO;
 }
 
-int empilha(Pilha *s, void *src) {
-  if (!s) {
-    printf("Pilha não alocada!!\n");
-    return 1;
-  }
-  // Calcula a posição
-  if(cheia(s)==0){
-    printf("Impossivel inserir mais elementos, pilha cheia!!\n");
-    return 1;
-  } else {
-    int pos = s->posicao * s->tamanhoDados;
-    // Copia a memória...
-    memcpy(s->dados + pos, src, s->tamanhoDados);
-    // Aumenta o tamanho...
-    s->posicao++;
-    return 0;
-  }
+int pilhaTopo(Pilha *pilha, void *dados) {
+  if (pilha == NULL || dados == NULL || pilhaVazia(pilha)) return FRACASSO;
+
+  memcpy(dados, pilha->dados[pilha->tamanho_atual - 1], pilha->tamanho_dados);
+
+  return SUCESSO;
 }
 
-int desempilha(Pilha *s, void *dst) {
-  
-  if (!s) {
-    printf("Pilha não alocada!!\n");
-    return 1;
-  }
-
-  if(vazia(s)==0){
-    printf("Não há mais elementos para remover!\n");
-    return 1;
-  } else {
-    // Diminui o contador...
-    s->posicao--;
-    // Calcula...
-    int pos = s->posicao * s->tamanhoDados;
-    // Copia...
-    memcpy(dst, s->dados + pos, s->tamanhoDados);
-    return 0;
-  }
-  
+int pilhaCheia(Pilha *pilha) {
+  return pilha != NULL && pilha->tamanho_atual == pilha->tamanho_maximo;
 }
 
-int cheia(Pilha *s) {
-  if(s->posicao==s->capacidade) return 0;
-  else return 1;
-}
-
-int vazia(Pilha *s) {
-  if(s->posicao==0) return 0;
-  else return 1;
-}
-
-int limpa(Pilha *s) {
-  if (!s) {
-    printf("Pilha não alocada!!\n");
-    return 1;
-  }
-
-  if(s->posicao==0){ 
-    printf("A pilha já está vazia!\n");
-    return 2;
-  } else {
-    printf("Limpando pilha... \n");
-    s->posicao = 0;
-    return 0;
-  }
-}
-
-int topo(Pilha *s, void *el) {
-
-  if (!s) {
-    printf("Pilha não alocada!!\n");
-    return 1;
-  }
-
-  if(vazia(s)==0){
-    printf("Não há elementos na pilha!\n");
-    return 1;
-  } else {
-    // Calcula...
-    int valor = s->posicao - 1;
-    int pos = valor * s->tamanhoDados;
-    // Copia...
-    memcpy(el, s->dados + pos, s->tamanhoDados);
-    return 0;
-  }
+int pilhaVazia(Pilha *pilha) {
+  return pilha == NULL || pilha->tamanho_atual == 0;
 }
