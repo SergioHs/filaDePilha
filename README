@@ -1,7 +1,5 @@
-MAM: Adicionei o conteudo de fila.c, fazendo os ajustes para nova nomenclatura. Atualizei o .h
+TDA Lista Dinâmica Simplesmente Encadeada Heterogênea
 
-As funções básicas da aplicação FilaDePilha são:
-cria ( ... ) -- Sergio
-destroi ( ... ) -- 
-insere ( ... ) -- Marco
-remove ( ... ) -- Felipe
+Para utilizar, inclua o header "lista_interface.h" na aplicação. Todas as funções (exceto listaTamanho e listaVazia) retornam 1 para sucesso e 0 para fracasso. As funções são autoexplicativas.
+
+Exemplo de compilação: gcc main.c lista.c -o main
